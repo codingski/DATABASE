@@ -1,4 +1,4 @@
-Mysql
+MySQL Instruction
 
 CREATE DATABASE opentutorials;
 DROP DATABASE opentutorials;
@@ -29,17 +29,21 @@ DATATYPE 을 구글링하여 테이블 만들기
 데이터 행 삽입 (CREATE)
 INSERT INTO topic(title, description, created, author, profile) VALUES('MySQL', 'MySQL is...', 'NOW()', 'egoing', 'developer');
 id값은 자동으로 1씩 증가니까 안써줘도 됨.
+순서에 맞게 다 작성한다면 topic 안의 내용 생략 가능
+ex) INSERT INTO topic VALUES('MySQL', 'MySQL is...', 'NOW()', 'egoing', 'developer');
 SHOW TABLES; 테이블을 보여줌
 DESC topic; 토픽이라는 테이블의 구조가 나옴
 
+
+데이터 읽기 (READ)
+- https://dev.mysql.com/doc/refman/5.7/en/select.html //SELECT Syntex
 SELECT * FROM topic; -> topic데이터의 모든것을 읽어줌 (READ)
 - 읽기는 다른것들에 비해 깊게 들어가면 조금 복잡할 수 있음
-- https://dev.mysql.com/doc/refman/5.7/en/select.html //SELECT Syntex
 
 SELECT (우리가 표시하고 싶은 컬럼의 목록) FROM topic;
 SELECT id, title,created,author FROM topic;
 
-author 의 값이 'egoing' 인 것만 보고 싶다면 WHERE
+author 의 값이 'egoing' 인 것만 보고 싶다면 WHERE 을 추가 입력
 SELECT id, title, created,author FROM topic WHERE author='egoing';
 
 정렬하고싶다면 DESC
@@ -48,3 +52,42 @@ SELECT id, title, created,author FROM topic WHERE author='egoing';
 데이터를 2건만 보고 싶다면 LIMIT
 SELECT id, title, created,author FROM topic WHERE author='egoing' ORDER BY id DESC LIMIT 2;
 
+
+데이터 수정( UPDATE )
+-https://dev.mysql.com/doc/refman/8.0/en/update.html
+UPDATE 테이블 이름 SET column_name = value WHERE 바꾸고자 하는곳의 행 
+UPDATE topic SET description = 'Oracle is ...', title = 'Oracle' WHERE id = 2;
+※ WHERE 을 입력하지 않으면 전체 행이 바뀌게 됨
+
+
+데이터 삭제 (DELETE)
+DELETE FROM 테이블 이름 WHERE 삭제하고자 하는 행의 값
+DELETE FROM topic WHERE id = 5;
+※ WHERE 을 입력하지 않으면 테이블 전체의 값이 삭제됨! 주의할것!
+
+
+관계형 데이터베이스의 필요성
+데이터가 중복되고 있다는 것 -> 개설할 것이 있다는 것
+장점: 별도의 참조 데이터 테이블을 만들어 중복이 없는 뛰어난 퍼포먼스와 쉬운 유지 보수
+단점: 별도의 표를 열어 비교해가며 봐야하기 때문에 직관적이지 않다.
+우리의 목표: 저장은 분상해서, 보여줄땐 합쳐서!! -> MySQL은 가능하다!!
+
+
+테이블 이름 수정
+RENAME TABLE 기존 테이블 이름 TO 바꾸고 싶은 테이블 이름
+RENAME TABLE topic TO topic_backup;
+
+
+JOIN
+SELECT 원하는column FROM 테이블 LEFT JOIN 연결하려는 테이블 ON 조건
+SELECT * FROM topic LEFT JOIN author ON topic.author_id = author.id;
+이렇게하면 topic.author_id 와 author.id 가 같이 보이게 된다.
+
+SELECT topic.id, title, description, created, name, profile FROM topic LEFT JOIN author ON topic.author_id = author.id;
+이렇게 하면 깔끔하게 정리되어 보인다.
+
+만약 topic.id 가 사람이 보기에 판별하기 힘들면
+SELECT topic.id AS topic_id, title, description, created, name, profile FROM topic LEFT JOIN author ON topic.author_id = author.id;
+이렇게 컬럼값 옆에 'AS 보이고자하는 이름' 을 추가하면 컬럼의 이름이 변경되어 보여진다.
+
+테이블을 분리한다는 것은, 모든 테이블이 식별자 값만 행에 포함하고 있다면 JOIN을 통해 얼마든지 관계를 맺을 수 있다.
